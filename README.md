@@ -1,11 +1,11 @@
 # 🚀 Todoist Clone - Full-Stack Task Management Application
 
-A complete task management application inspired by Todoist, built with modern technologies and fully dockerized.
+[![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18-green)](https://nodejs.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
 
-![React](https://img.shields.io/badge/React-18-blue)
-![Node.js](https://img.shields.io/badge/Node.js-18-green)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
-![Docker](https://img.shields.io/badge/Docker-Ready-blue)
+A complete, production-ready task management application inspired by Todoist. Built with React, Node.js, Express, and PostgreSQL - fully dockerized and ready to deploy.
 
 ## 📋 Features
 
@@ -34,8 +34,8 @@ A complete task management application inspired by Todoist, built with modern te
 ## 🏗️ Tech Stack
 
 ### Backend
-- **Node.js** + **Express.js**
-- **PostgreSQL** with UUID primary keys
+- **Node.js 18** + **Express.js**
+- **PostgreSQL 15** with UUID primary keys
 - **JWT** authentication
 - **bcrypt** for password hashing
 - Security: Helmet, CORS, Rate Limiting
@@ -53,227 +53,585 @@ A complete task management application inspired by Todoist, built with modern te
 - Health checks
 - Persistent volumes
 
-## 🚀 Quick Start
+---
+
+## 🚀 QUICK START (5 MINUTES)
 
 ### Prerequisites
-- [Docker Desktop](https://www.docker.com/products/docker-desktop) installed
-- Git (optional)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) installed and running
+- Git installed (optional)
 
-### Installation
+### Option 1: Automated Setup (Recommended)
 
-1. **Clone the repository**
-\`\`\`bash
+#### Windows:
+```bash
 git clone https://github.com/AndySuarezRicardo/todoist-clone.git
 cd todoist-clone
-\`\`\`
+setup.bat
+```
 
-2. **Start the application**
-\`\`\`bash
-docker-compose up --build
-\`\`\`
+#### Mac/Linux:
+```bash
+git clone https://github.com/AndySuarezRicardo/todoist-clone.git
+cd todoist-clone
+chmod +x setup.sh
+./setup.sh
+```
 
-Wait for the services to start (first time takes 3-5 minutes)
+The script will:
+1. ✅ Stop any existing containers
+2. ✅ Create environment files
+3. ✅ Build and start all services
+4. ✅ Run database migrations
+5. ✅ Display access URLs
 
-3. **Run database migrations**
+**Then open:** http://localhost:3000
 
-Open a new terminal and run:
-\`\`\`bash
+---
+
+### Option 2: Manual Setup
+
+#### Step 1: Clone the Repository
+```bash
+git clone https://github.com/AndySuarezRicardo/todoist-clone.git
+cd todoist-clone
+```
+
+#### Step 2: Create Environment Files
+
+**Backend:**
+```bash
+cp backend/.env.example backend/.env
+```
+
+**Frontend:**
+```bash
+echo "VITE_API_URL=http://localhost:5000/api/v1" > frontend/.env
+```
+
+#### Step 3: Start Docker Services
+```bash
+docker-compose up --build -d
+```
+
+⏰ **First time takes 5-10 minutes** (downloads images, installs dependencies)
+
+#### Step 4: Check Services Are Running
+
+```bash
+docker-compose ps
+```
+
+You should see 3 containers running:
+- `todoist-db` (PostgreSQL)
+- `todoist-backend` (Node.js API)
+- `todoist-frontend` (React + Nginx)
+
+#### Step 5: Run Database Migrations
+
+**IMPORTANT:** Wait 15-20 seconds for database to initialize, then:
+
+```bash
 docker-compose exec backend npm run migrate
-\`\`\`
+```
 
-You should see: ✅ Database migrations completed successfully
+Expected output:
+```
+🔄 Running database migrations...
+✅ Database migrations completed successfully
+```
 
-4. **Open the application**
+#### Step 6: Verify Everything Works
 
-Navigate to: **http://localhost:3000**
+**Test Backend:**
+```bash
+curl http://localhost:5000/health
+```
 
-## 📖 Usage
+Expected response:
+```json
+{"status":"ok","timestamp":"2026-01-16...","version":"v1"}
+```
 
-### First Time Setup
+**Test Frontend:**
+Open browser: http://localhost:3000
 
-1. Click "Register" and create an account
-2. Fill in your details and submit
-3. You'll be automatically logged in
+---
 
-### Creating Tasks
+## 📖 USAGE GUIDE
 
-1. Click "+ Add Task" button
-2. Enter task details:
-   - Title (required)
-   - Description (optional)
-   - Project
-   - Priority (Low, Medium, High, Urgent)
-   - Due date
+### First Time User
 
-3. Click "Add Task"
+1. **Register Account**
+   - Click "Register" on login page
+   - Fill in: Full Name, Username, Email, Password (min 6 chars)
+   - Click "Register"
+   - You'll be automatically logged in
 
-### Managing Tasks
+2. **Dashboard Overview**
+   - Left sidebar: Projects and navigation
+   - Main area: Task list
+   - "+ Add Task" button: Create new tasks
 
-- **Complete**: Click the circle icon
-- **Edit**: Hover and click the edit icon
-- **Delete**: Hover and click the trash icon
+3. **Create Your First Task**
+   - Click "+ Add Task"
+   - Enter task title (required)
+   - Optional: Description, Priority, Due Date
+   - Select project (default: Inbox)
+   - Click "Add Task"
 
-## 🛠️ Development
+4. **Manage Tasks**
+   - ⭕ **Complete:** Click circle icon
+   - ✏️ **Edit:** Hover and click pencil icon
+   - 🗑️ **Delete:** Hover and click trash icon
+
+### Priority Levels
+- 🔴 **Priority 4** (Urgent) - Red
+- 🟡 **Priority 3** (High) - Yellow
+- 🔵 **Priority 2** (Medium) - Blue
+- ⚪ **Priority 1** (Low) - Gray
+
+---
+
+## 🛠️ DEVELOPMENT
 
 ### Project Structure
 
-\`\`\`
+```
 todoist-clone/
-├── backend/                  # Node.js API
+├── backend/                    # Node.js API Server
 │   ├── src/
-│   │   ├── config/          # Database & configuration
-│   │   ├── controllers/     # Business logic
-│   │   ├── middleware/      # Auth & validation
-│   │   ├── routes/          # API endpoints
-│   │   ├── utils/           # Utilities
-│   │   └── server.js        # Express server
+│   │   ├── config/            # Database & configuration
+│   │   │   ├── database.js    # PostgreSQL connection
+│   │   │   └── schema.sql     # Database schema
+│   │   ├── controllers/       # Business logic
+│   │   │   ├── authController.js
+│   │   │   ├── tasksController.js
+│   │   │   ├── projectsController.js
+│   │   │   └── labelsController.js
+│   │   ├── middleware/        # Auth & validation
+│   │   │   └── auth.js
+│   │   ├── routes/            # API endpoints
+│   │   │   ├── auth.js
+│   │   │   ├── tasks.js
+│   │   │   ├── projects.js
+│   │   │   └── labels.js
+│   │   ├── utils/             # Utilities
+│   │   │   └── migrate.js
+│   │   └── server.js          # Express server
+│   ├── .env.example
 │   ├── Dockerfile
 │   └── package.json
 │
-├── frontend/                 # React Application
+├── frontend/                   # React Application
 │   ├── src/
-│   │   ├── components/      # React components
-│   │   ├── context/         # Global state
-│   │   ├── pages/           # Page components
-│   │   ├── services/        # API client
-│   │   └── App.jsx
+│   │   ├── components/        # React components
+│   │   │   ├── Sidebar.jsx
+│   │   │   ├── TaskList.jsx
+│   │   │   ├── TaskItem.jsx
+│   │   │   └── TaskForm.jsx
+│   │   ├── context/           # Global state
+│   │   │   └── AuthContext.jsx
+│   │   ├── pages/             # Page components
+│   │   │   ├── Login.jsx
+│   │   │   ├── Register.jsx
+│   │   │   └── Dashboard.jsx
+│   │   ├── services/          # API client
+│   │   │   └── api.js
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css
+│   ├── .env.example
 │   ├── Dockerfile
+│   ├── nginx.conf
+│   ├── vite.config.js
+│   ├── tailwind.config.js
 │   └── package.json
 │
-├── docker-compose.yml        # Orchestration
+├── docker-compose.yml          # Services orchestration
+├── setup.bat                   # Windows setup script
+├── setup.sh                    # Unix/Mac setup script
 └── README.md
-\`\`\`
+```
 
 ### API Endpoints
 
 #### Authentication
-- POST `/api/v1/auth/register` - Register new user
-- POST `/api/v1/auth/login` - Login user
-- GET `/api/v1/auth/me` - Get current user
+- `POST /api/v1/auth/register` - Register new user
+- `POST /api/v1/auth/login` - Login user
+- `GET /api/v1/auth/me` - Get current user (requires auth)
 
 #### Tasks
-- GET `/api/v1/tasks` - List tasks
-- POST `/api/v1/tasks` - Create task
-- PUT `/api/v1/tasks/:id` - Update task
-- DELETE `/api/v1/tasks/:id` - Delete task
+- `GET /api/v1/tasks` - List tasks (requires auth)
+  - Query params: `project_id`, `completed`, `priority`
+- `POST /api/v1/tasks` - Create task (requires auth)
+- `PUT /api/v1/tasks/:id` - Update task (requires auth)
+- `DELETE /api/v1/tasks/:id` - Delete task (requires auth)
 
 #### Projects
-- GET `/api/v1/projects` - List projects
-- POST `/api/v1/projects` - Create project
-- DELETE `/api/v1/projects/:id` - Delete project
+- `GET /api/v1/projects` - List projects (requires auth)
+- `POST /api/v1/projects` - Create project (requires auth)
+- `DELETE /api/v1/projects/:id` - Delete project (requires auth)
 
 #### Labels
-- GET `/api/v1/labels` - List labels
-- POST `/api/v1/labels` - Create label
-- DELETE `/api/v1/labels/:id` - Delete label
+- `GET /api/v1/labels` - List labels (requires auth)
+- `POST /api/v1/labels` - Create label (requires auth)
+- `DELETE /api/v1/labels/:id` - Delete label (requires auth)
 
 ### Environment Variables
 
-Backend (`.env`):
-\`\`\`env
+**Backend (`.env`):**
+```env
 NODE_ENV=production
 PORT=5000
+API_VERSION=v1
 DB_HOST=postgres
+DB_PORT=5432
 DB_NAME=todoist_db
 DB_USER=postgres
-DB_PASSWORD=your_password
-JWT_SECRET=your_secret_key
+DB_PASSWORD=postgres123
+JWT_SECRET=your_secret_key_here
+JWT_EXPIRE=7d
 CORS_ORIGIN=http://localhost:3000
-\`\`\`
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+```
 
-## 🐳 Docker Commands
+**Frontend (`.env`):**
+```env
+VITE_API_URL=http://localhost:5000/api/v1
+```
 
-\`\`\`bash
-# Start services
-docker-compose up
+---
 
-# Start in background
+## 🐳 DOCKER COMMANDS
+
+### Basic Commands
+
+```bash
+# Start services (detached mode)
 docker-compose up -d
 
-# View logs
+# Start with rebuild
+docker-compose up --build -d
+
+# View logs (all services)
 docker-compose logs -f
+
+# View logs (specific service)
+docker-compose logs -f backend
+docker-compose logs -f frontend
+
+# Check running containers
+docker-compose ps
 
 # Stop services
 docker-compose down
 
-# Reset everything (⚠️ deletes data)
+# Stop and remove volumes (⚠️ DELETES DATABASE)
 docker-compose down -v
 
-# Rebuild after changes
-docker-compose up --build
-\`\`\`
+# Restart a service
+docker-compose restart backend
+```
 
-## 🔒 Security Features
+### Troubleshooting Commands
+
+```bash
+# Access backend container shell
+docker-compose exec backend sh
+
+# Access database
+docker-compose exec postgres psql -U postgres -d todoist_db
+
+# Run migrations manually
+docker-compose exec backend npm run migrate
+
+# Check backend logs for errors
+docker-compose logs backend --tail=50
+
+# Rebuild only backend
+docker-compose up --build -d backend
+```
+
+---
+
+## 🔧 TROUBLESHOOTING
+
+### ❌ Error: "Port 5000 is already in use"
+
+**Solution 1: Kill process using port**
+
+Windows:
+```powershell
+netstat -ano | findstr :5000
+taskkill /PID <PID_NUMBER> /F
+```
+
+Mac/Linux:
+```bash
+lsof -ti:5000 | xargs kill -9
+```
+
+**Solution 2: Change port in docker-compose.yml**
+```yaml
+backend:
+  ports:
+    - "5001:5000"  # Change 5000 to 5001
+```
+
+### ❌ Error: "Cannot connect to Docker daemon"
+
+**Solution:**
+1. Make sure Docker Desktop is running
+2. Look for Docker icon in system tray/menu bar
+3. If not running, start Docker Desktop
+4. Wait 30 seconds for Docker to initialize
+5. Try command again
+
+### ❌ Error: "Connection refused" or "ECONNREFUSED"
+
+**Solution:**
+```bash
+# Check if all services are running
+docker-compose ps
+
+# If any service is not "Up", restart
+docker-compose down
+docker-compose up -d
+
+# Wait 30 seconds
+# Run migrations again
+docker-compose exec backend npm run migrate
+```
+
+### ❌ Error: "Migration failed" or Database errors
+
+**Solution (Nuclear option - resets everything):**
+```bash
+# Stop and remove everything
+docker-compose down -v
+
+# Start fresh
+docker-compose up --build -d
+
+# Wait 20 seconds
+sleep 20
+
+# Run migrations
+docker-compose exec backend npm run migrate
+```
+
+### ❌ Frontend shows "Cannot read properties of undefined"
+
+**Solution:**
+```bash
+# Check frontend environment
+docker-compose exec frontend env | grep VITE
+
+# If VITE_API_URL is missing, recreate .env
+echo "VITE_API_URL=http://localhost:5000/api/v1" > frontend/.env
+
+# Rebuild frontend
+docker-compose up --build -d frontend
+```
+
+### ❌ "Invalid token" or Authentication issues
+
+**Solution:**
+1. Clear browser localStorage
+   - Open DevTools (F12)
+   - Go to Application > Local Storage
+   - Delete all items
+2. Refresh page
+3. Login again
+
+### 🐛 General Debug Process
+
+1. **Check all containers are running:**
+   ```bash
+   docker-compose ps
+   ```
+
+2. **View real-time logs:**
+   ```bash
+   docker-compose logs -f
+   ```
+
+3. **Test backend health:**
+   ```bash
+   curl http://localhost:5000/health
+   ```
+
+4. **Restart everything:**
+   ```bash
+   docker-compose restart
+   ```
+
+5. **Last resort (fresh start):**
+   ```bash
+   docker-compose down -v
+   docker-compose up --build -d
+   sleep 20
+   docker-compose exec backend npm run migrate
+   ```
+
+---
+
+## 🔒 SECURITY
+
+### Implemented Security Features
 
 - ✅ Password hashing with bcrypt (10 rounds)
 - ✅ JWT authentication with expiration
-- ✅ Rate limiting (100 requests/15 min)
+- ✅ Rate limiting (100 requests per 15 minutes)
 - ✅ Helmet.js security headers
 - ✅ CORS configuration
 - ✅ SQL injection protection (prepared statements)
-- ✅ Input validation
+- ✅ Input validation with express-validator
 - ✅ Environment variables for secrets
 
-## 📊 Database Schema
+### For Production Deployment
 
-The application uses PostgreSQL with 9 tables:
+1. **Change JWT Secret:**
+   ```bash
+   # Generate strong random secret
+   node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+   ```
 
-- **users** - User accounts
+2. **Use HTTPS:**
+   - Get SSL certificate (Let's Encrypt)
+   - Configure reverse proxy (Nginx/Caddy)
+
+3. **Update CORS:**
+   ```env
+   CORS_ORIGIN=https://yourdomain.com
+   ```
+
+4. **Secure Database:**
+   - Use strong password
+   - Don't expose port 5432 publicly
+
+5. **Environment Variables:**
+   - Use secrets manager (AWS Secrets Manager, etc.)
+   - Never commit `.env` to Git
+
+---
+
+## 📊 DATABASE SCHEMA
+
+### Tables
+
+- **users** - User accounts and profiles
 - **projects** - Task organization
-- **tasks** - Main tasks with priorities
+- **tasks** - Main tasks with priorities and due dates
 - **labels** - Reusable tags
 - **task_labels** - Many-to-many relationship
-- **comments** - Task comments
-- **filters** - Custom views
+- **comments** - Task comments (ready for future use)
+- **filters** - Custom views (ready for future use)
 
-## 🚧 Troubleshooting
+### Key Features
 
-### Port already in use
-\`\`\`bash
-# Find process using port 5000
-lsof -ti:5000 | xargs kill -9
+- UUID primary keys
+- Foreign key constraints with CASCADE
+- Automatic timestamps (created_at, updated_at)
+- Triggers for automatic timestamp updates
+- Indexes on frequently queried columns
 
-# Or change port in docker-compose.yml
-\`\`\`
+---
 
-### Database connection failed
-\`\`\`bash
-# Restart with fresh database
-docker-compose down -v
-docker-compose up --build
-docker-compose exec backend npm run migrate
-\`\`\`
+## 🚀 DEPLOYMENT
 
-### Frontend not loading
-- Wait 1-2 minutes for build to complete
-- Check logs: `docker-compose logs frontend`
-- Try hard refresh: Ctrl+F5
+### Heroku
 
-## 📈 Future Enhancements
+```bash
+# Install Heroku CLI
+heroku login
 
-- [ ] Drag & drop for reordering
+# Create app
+heroku create todoist-clone-app
+
+# Add PostgreSQL
+heroku addons:create heroku-postgresql:hobby-dev
+
+# Set environment variables
+heroku config:set NODE_ENV=production
+heroku config:set JWT_SECRET=$(node -e "console.log(require('crypto').randomBytes(64).toString('hex'))")
+heroku config:set API_VERSION=v1
+
+# Deploy
+git push heroku main
+
+# Run migrations
+heroku run npm run migrate --app todoist-clone-app
+```
+
+### Railway / Render
+
+1. Connect GitHub repository
+2. Set environment variables from `.env.example`
+3. Deploy automatically on push
+
+### DigitalOcean / AWS
+
+1. Provision Ubuntu 22.04 server
+2. Install Docker and Docker Compose
+3. Clone repository
+4. Configure `.env` files
+5. Run `docker-compose up -d`
+6. Set up Nginx reverse proxy
+7. Install SSL with Certbot
+
+---
+
+## 📈 FUTURE ENHANCEMENTS
+
+- [ ] Drag & drop for task reordering
 - [ ] Kanban board view
 - [ ] Dark mode
 - [ ] Email notifications
 - [ ] File attachments
-- [ ] Collaboration features
+- [ ] Task comments UI
+- [ ] Collaboration (share projects)
 - [ ] Mobile app (React Native)
 - [ ] Calendar integration
-
-## 📄 License
-
-MIT License - feel free to use for personal and commercial projects
-
-## 👤 Author
-
-**Andy Suarez Ricardo**
-- GitHub: [@AndySuarezRicardo](https://github.com/AndySuarezRicardo)
-
-## 🙏 Acknowledgments
-
-- Inspired by [Todoist](https://todoist.com)
-- Built as a full-stack learning project
+- [ ] Recurring tasks
+- [ ] Task templates
+- [ ] Productivity statistics
 
 ---
 
-⭐ If you found this helpful, please give it a star on GitHub!
+## 📄 LICENSE
+
+MIT License - Free for personal and commercial use
+
+---
+
+## 👤 AUTHOR
+
+**Andy Suarez Ricardo**
+- GitHub: [@AndySuarezRicardo](https://github.com/AndySuarezRicardo)
+- Repository: [todoist-clone](https://github.com/AndySuarezRicardo/todoist-clone)
+
+---
+
+## 🙏 ACKNOWLEDGMENTS
+
+- Inspired by [Todoist](https://todoist.com)
+- Built as a full-stack learning project
+- Technologies: React, Node.js, PostgreSQL, Docker
+
+---
+
+## 🆘 SUPPORT
+
+If you encounter issues:
+
+1. Check [Troubleshooting](#-troubleshooting) section
+2. Review logs: `docker-compose logs -f`
+3. Open an issue on GitHub
+4. Make sure Docker Desktop is running
+
+---
+
+⭐ **If this project helped you, please give it a star on GitHub!** ⭐
