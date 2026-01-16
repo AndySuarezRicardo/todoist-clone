@@ -1,0 +1,55 @@
+@echo off
+echo ========================================
+echo   TODOIST CLONE - QUICK SETUP
+echo ========================================
+echo.
+
+REM Check Docker
+docker info >nul 2>&1
+if errorlevel 1 (
+    echo ERROR: Docker is not running
+    echo Please start Docker Desktop and try again
+    pause
+    exit /b 1
+)
+
+echo [1/4] Stopping existing containers...
+docker-compose down
+
+echo.
+echo [2/4] Creating environment files...
+if not exist backend\.env (
+    copy backend\.env.example backend\.env
+    echo Created backend/.env
+)
+
+if not exist frontend\.env (
+    echo VITE_API_URL=http://localhost:5000/api/v1 > frontend\.env
+    echo Created frontend/.env
+)
+
+echo.
+echo [3/4] Building and starting containers...
+echo This may take 5-10 minutes on first run...
+docker-compose up --build -d
+
+echo.
+echo [4/4] Waiting for database to be ready...
+timeout /t 15 /nobreak >nul
+
+echo.
+echo Running database migrations...
+docker-compose exec -T backend npm run migrate
+
+echo.
+echo ========================================
+echo   ✅ SETUP COMPLETE!
+echo ========================================
+echo.
+echo 🌐 Frontend: http://localhost:3000
+echo 🔧 Backend:  http://localhost:5000/health
+echo.
+echo To view logs: docker-compose logs -f
+echo To stop:      docker-compose down
+echo.
+pause
